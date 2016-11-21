@@ -1,0 +1,3 @@
+[atomichosts]
+rishi.goozbach.net ansible_become=true ansible_user=goozbach become=true become_method=sudo
+
