@@ -2,6 +2,9 @@
 - name: setup Atomic host
   hosts: atomichosts
 
+  vars_files:
+    - vars.yml
+
   tasks:
     - name: upgrade
       shell: /usr/bin/atomic host upgrade
@@ -47,3 +50,43 @@
       delegate_to: localhost
       become: false
       when: "installpkgs.changed"
+
+    - name: create certbot folder
+      file:
+        path: /var/certbot
+        owner: root
+        group: wheel
+        mode: 0770
+        state: directory
+        setype: svirt_sandbox_file_t 
+
+    - name: change ownership of /var/run/docker.sock
+      file:
+        path: /var/run/docker.sock
+        owner: root
+        group: wheel
+        mode: 0660
+        setype: container_var_run_t
+      tags: [ docker ]
+
+    - name: make rshared
+      shell: /usr/bin/mount --make-rshared / && touch /var/run/.rshared creates=/var/run/.rshared warn=false 
+      tags: [ docker ]
+
+    - name: template out /etc/hosts
+      template:
+        src: templates/etc_hosts.j2
+        dest: /etc/hosts
+        mode: 0644
+        owner: root
+        group: root
+      tags: [ hosts ]
+
+    - name: template out /etc/atomic-registry/master/htpasswd-registry
+      template:
+        src: templates/htpasswd-registry.j2
+        dest: /etc/atomic-registry/master/htpasswd-registry
+        owner: root
+        group: root
+        mode: 0644
+      tags: [ atomic, registry ]
