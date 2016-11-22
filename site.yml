@@ -47,3 +47,11 @@
       delegate_to: localhost
       become: false
       when: "installpkgs.changed"
+
+    - name: template out tmux.conf
+      template:
+        src: templates/tmux.conf.j2
+        dest: "~goozbach/.tmux.conf"
+        owner: goozbach
+        group: goozbach
+        mode: 0644
