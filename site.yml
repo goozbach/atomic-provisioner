@@ -82,15 +82,6 @@
         group: root
       tags: [ hosts ]
 
-    - name: template out /etc/atomic-registry/master/htpasswd-registry
-      template:
-        src: templates/htpasswd-registry.j2
-        dest: /etc/atomic-registry/master/htpasswd-registry
-        owner: root
-        group: root
-        mode: 0644
-      tags: [ atomic, registry ]
-
     - name: template out tmux.conf
       template:
         src: templates/tmux.conf.j2
