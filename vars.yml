@@ -8,4 +8,8 @@ docker_volumes:
   - path: /var/frontend
   - path: /var/frontend/html
   - path: /var/frontend/config
+  - path: /var/gitlab/
+  - path: /var/gitlab/config
+  - path: /var/gitlab/logs
+  - path: /var/gitlab/data
 
