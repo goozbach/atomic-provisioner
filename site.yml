@@ -115,7 +115,7 @@
       iptables:
         chain: INPUT
         protocol: tcp
-        in_interface: ssh
+        destination_port: ssh
         ctstate: NEW
         jump: ACCEPT
       tags: [ firewall ]
@@ -139,3 +139,25 @@
         chain: INPUT
         policy: DROP
       tags: [ firewall ]
+
+    - name: create local-registry container
+      docker_container:
+        name: "local-registry"
+        image: "registry:2"
+        state: started
+        volumes:
+          - "/var/lib/local-registry:/var/lib/registry"
+          - "/var/htaccess:/var/htaccess"
+          - "/var/certbot:/etc/certbot:ro"
+        ports:
+          - "5000:5000"
+        restart_policy: always
+        env:
+          REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
+          REGISTRY_AUTH: "htpasswd"
+          REGISTRY_AUTH_HTPASSWD_REALM: "goozbach registry"
+          REGISTRY_AUTH_HTPASSWD_PATH: "/var/htaccess/registry.htpasswd"
+          REGISTRY_HTTP_TLS_CERTIFICATE: "/etc/certbot/live/rishi.goozbach.net/cert.pem"
+          REGISTRY_HTTP_TLS_KEY: "/etc/certbot/live/rishi.goozbach.net/privkey.pem"
+      tags: [ docker,containers ]
+ 
