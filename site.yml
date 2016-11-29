@@ -3,6 +3,7 @@
   hosts: atomichosts
 
   vars_files:
+    - vault.yml
     - vars.yml
 
   tasks:
@@ -70,7 +71,8 @@
       tags: [ docker ]
 
     - name: make rshared
-      shell: /usr/bin/mount --make-rshared / && touch /var/run/.rshared creates=/var/run/.rshared warn=false 
+      shell: /usr/bin/mount --make-rshared warn=false 
+      changed_when: false
       tags: [ docker ]
 
     - name: template out /etc/hosts
@@ -139,6 +141,18 @@
         chain: INPUT
         policy: DROP
       tags: [ firewall ]
+
+    - name: create all docker volume folders
+      file:
+        path: "{{ item.path }}"
+        owner: "{{ item.owner | default ('root') }}"
+        group: "{{ item.group | default ('root') }}"
+        mode: "{{ item.mode | default ('0775') }}"
+        setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
+        state: directory
+      with_items: "{{ docker_volumes }}"
+      tags: [ docker, volumes ]
+
 
     - name: create local-registry container
       docker_container:
