@@ -5,6 +5,12 @@
   vars_files:
     - vars.yml
 
+  handlers:
+    - name: reload iptables
+      service:
+        name: iptables
+        state: restarted
+
   tasks:
     - name: upgrade
       shell: /usr/bin/atomic host upgrade
@@ -82,15 +88,6 @@
         group: root
       tags: [ hosts ]
 
-    - name: template out /etc/atomic-registry/master/htpasswd-registry
-      template:
-        src: templates/htpasswd-registry.j2
-        dest: /etc/atomic-registry/master/htpasswd-registry
-        owner: root
-        group: root
-        mode: 0644
-      tags: [ atomic, registry ]
-
     - name: template out tmux.conf
       template:
         src: templates/tmux.conf.j2
@@ -112,3 +109,14 @@
       with_items:
         - root
         - goozbach
+
+    - name: template out sysconfig/iptables
+      template:
+        src: templates/iptables-save.j2
+        dest: "/etc/sysconfig/iptables"
+        owner: "root"
+        group: "root"
+        mode: 0600
+      notify:
+        - reload iptables
+
