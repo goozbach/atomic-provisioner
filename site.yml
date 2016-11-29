@@ -151,8 +151,7 @@
         setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
         state: directory
       with_items: "{{ docker_volumes }}"
-      tags: [ docker, volumes ]
-
+      tags: [ docker, volumes, registry, certbot, frontend]
 
     - name: create local-registry container
       docker_container:
@@ -173,5 +172,12 @@
           REGISTRY_AUTH_HTPASSWD_PATH: "/var/htaccess/registry.htpasswd"
           REGISTRY_HTTP_TLS_CERTIFICATE: "/etc/certbot/live/rishi.goozbach.net/cert.pem"
           REGISTRY_HTTP_TLS_KEY: "/etc/certbot/live/rishi.goozbach.net/privkey.pem"
-      tags: [ docker,containers ]
+      tags: [ docker, containers, registry ]
  
+    - name: create certbot-updater container
+      docker_container:
+        name: "certbot-updater"
+        image: "rishi.goozbach.net:5000/certbot-updater:v1.0.1"
+        volumes:
+          - "/var/certbot/:/etc/letsencrypt"
+      tags: [ docker, containers, certbot ]
