@@ -181,3 +181,20 @@
         volumes:
           - "/var/certbot/:/etc/letsencrypt"
       tags: [ docker, containers, certbot ]
+
+    - name: create frontend container
+      docker_container:
+        name: "frontend"
+        image: "nginx:alpine"
+        ports:
+          - "80:80"
+          - "443:443"
+        links:
+          - "certbot-updater"
+        volumes:
+          - "/var/certbot/:/etc/letsencrypt"
+          - "/var/frontend/config/nginx.conf:/etc/nginx/nginx.conf:ro"
+          - "/var/frontend/config/conf.d/:/etc/nginx/conf.d/:ro"
+          - "/var/frontend/html/:/usr/share/nginx/html/:ro"
+      tags: [ docker, containers, frontend ]
+
