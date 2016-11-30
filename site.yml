@@ -151,7 +151,7 @@
         setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
         state: directory
       with_items: "{{ docker_volumes }}"
-      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab]
+      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders ]
 
     - name: create local-registry container
       docker_container:
@@ -182,6 +182,26 @@
           - "/var/certbot/:/etc/letsencrypt"
           - "/var/certbot-well-known:/var/www/html/"
       tags: [ docker, containers, certbot ]
+
+    - name: template postgres initdb file
+      template:
+        src: templates/gitlab.sql.j2
+        dest: "/var/postgres/bootstrap/gitlab.sql"
+        owner: root
+        group: root
+        mode: 0644
+      tags: [ docker, containers, postgres ]
+
+    - name: create postgres container
+      docker_container:
+        name: "postgres"
+        image: "postgres:alpine"
+        env:
+          POSTGRES_PASSWORD: "{{ postgres_passwords['postgres'] }}"
+        volumes:
+          - "/var/postgres/bootstrap:/docker-entrypoint-initdb.d"
+          - "/var/postgres/data:/var/lib/postgresql/data"
+      tags: [ docker, containers, postgres ]
 
     - name: create gitlab container
       docker_container:

@@ -1,0 +1,9 @@
+-- {{ ansible_managed }}
+
+-- create trgm extension
+CREATE EXTENSION pg_trgm;
+
+-- create user
+CREATE USER gitlab WITH PASSWORD '{{ postgres_passwords['gitlab'] }}';
+CREATE DATABASE gitlab;
+GRANT ALL PRIVILEGES ON DATABASE gitlab TO gitlab;

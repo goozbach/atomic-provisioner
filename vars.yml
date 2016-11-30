@@ -14,4 +14,6 @@ docker_volumes:
   - path: /var/gitlab/config
   - path: /var/gitlab/logs
   - path: /var/gitlab/data
+  - path: /var/postgres/bootstrap
+  - path: /var/postgres/data
 
