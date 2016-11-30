@@ -151,7 +151,7 @@
         setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
         state: directory
       with_items: "{{ docker_volumes }}"
-      tags: [ docker, volumes, registry, certbot, frontend, gitlab]
+      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab]
 
     - name: create local-registry container
       docker_container:
@@ -177,9 +177,10 @@
     - name: create certbot-updater container
       docker_container:
         name: "certbot-updater"
-        image: "rishi.goozbach.net:5000/certbot-updater:v1.0.1"
+        image: "rishi.goozbach.net:5000/certbot-updater:v1.0.2"
         volumes:
           - "/var/certbot/:/etc/letsencrypt"
+          - "/var/certbot-well-known:/var/www/html/"
       tags: [ docker, containers, certbot ]
 
     - name: create gitlab container
@@ -195,7 +196,6 @@
           - "/var/gitlab/config/:/var/gitlab/config/"
         env:
           GITLAB_OMNIBUS_CONFIG: |
-            external_url 'https://rishi.goozbach.net/gitlab/'
             nginx['ssl_certificate'] = '/etc/letsencrypt/live/rishi.goozbach.net/fullchain.pem'
             nginx['ssl_certificate_key'] = '/etc/letsencrypt/live/rishi.goozbach.net/privkey.pem'
       tags: [ docker, containers, gitlab ]
@@ -208,14 +208,14 @@
           - "80:80"
           - "443:443"
         links:
-          - "certbot-updater"
-          - "gitlab"
+          - gitlab
         volumes:
           - "/var/certbot/:/etc/letsencrypt"
           - "/var/frontend/config/nginx.conf:/etc/nginx/nginx.conf:ro"
           - "/var/frontend/config/conf.d/:/etc/nginx/conf.d/:ro"
           - "/var/frontend/config/pre.d/:/etc/nginx/pre.d/:ro"
           - "/var/frontend/config/inside.d/:/etc/nginx/inside.d/:ro"
-          - "/var/frontend/html/:/usr/share/nginx/html/:ro"
+          - "/var/frontend/html/:/usr/share/nginx/html/"
+          - "/var/certbot-well-known/.well-known/:/usr/share/nginx/html/.well-known:ro"
       tags: [ docker, containers, frontend ]
 
