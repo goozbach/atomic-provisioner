@@ -195,7 +195,7 @@
           - "/var/gitlab/config/:/var/gitlab/config/"
         env:
           GITLAB_OMNIBUS_CONFIG: |
-            external_url = 'http://rishi.goozbach.net/gitlab/'
+            external_url 'https://rishi.goozbach.net/gitlab/'
             nginx['ssl_certificate'] = '/etc/letsencrypt/live/rishi.goozbach.net/fullchain.pem'
             nginx['ssl_certificate_key'] = '/etc/letsencrypt/live/rishi.goozbach.net/privkey.pem'
       tags: [ docker, containers, gitlab ]
