@@ -151,7 +151,7 @@
         setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
         state: directory
       with_items: "{{ docker_volumes }}"
-      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders ]
+      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders, database, perconda ]
 
     - name: create local-registry container
       docker_container:
@@ -190,7 +190,18 @@
         owner: root
         group: root
         mode: 0644
-      tags: [ docker, containers, postgres ]
+      tags: [ docker, containers, postgres, database ]
+
+    - name: create percona container
+      docker_container:
+        name: "percona"
+        image: "percona:latest"
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ percona_passwords['root'] }}"
+        volumes:
+          - "/var/percona/bootstrap:/docker-entrypoint-initdb.d"
+          - "/var/percona/data:/var/lib/mysql"
+      tags: [ docker, containers, percona, database ]
 
     - name: create postgres container
       docker_container:
