@@ -52,15 +52,6 @@
       become: false
       when: "installpkgs.changed"
 
-    - name: create certbot folder
-      file:
-        path: /var/certbot
-        owner: root
-        group: wheel
-        mode: 0770
-        state: directory
-        setype: svirt_sandbox_file_t 
-
     - name: change ownership of /var/run/docker.sock
       file:
         path: /var/run/docker.sock
@@ -71,7 +62,7 @@
       tags: [ docker ]
 
     - name: make rshared
-      shell: /usr/bin/mount --make-rshared warn=false 
+      shell: /usr/bin/mount --make-rshared / warn=false 
       changed_when: false
       tags: [ docker ]
 
@@ -148,10 +139,10 @@
         owner: "{{ item.owner | default ('root') }}"
         group: "{{ item.group | default ('root') }}"
         mode: "{{ item.mode | default ('0775') }}"
-        setype: "{{ item.type | default ('svirt_sandbox_file_t') }}"
+        setype: "{{ item.type | default ('container_file_t') }}"
         state: directory
       with_items: "{{ docker_volumes }}"
-      tags: [ containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders, database, perconda ]
+      tags: [ mysql, containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders, database, perconda ]
 
     - name: create local-registry container
       docker_container:
@@ -185,12 +176,27 @@
 
     - name: template postgres initdb file
       template:
-        src: templates/gitlab.sql.j2
-        dest: "/var/postgres/bootstrap/gitlab.sql"
+        src: templates/{{ item }}.j2
+        dest: "/var/postgres/bootstrap/{{ item }}"
         owner: root
         group: root
         mode: 0644
+        setype: container_file_t
+      with_items:
+        - 'gitlab.sql'
       tags: [ docker, containers, postgres, database ]
+
+    - name: template percona initdb file
+      template:
+        src: templates/{{ item }}.j2
+        dest: "/var/percona/bootstrap/{{ item }}"
+        owner: root
+        group: root
+        mode: 0644
+        setype: container_file_t
+      with_items:
+        - 'wordpress.sql'
+      tags: [ docker, containers, percona, mysql, database ]
 
     - name: create percona container
       docker_container:
@@ -201,7 +207,7 @@
         volumes:
           - "/var/percona/bootstrap:/docker-entrypoint-initdb.d"
           - "/var/percona/data:/var/lib/mysql"
-      tags: [ docker, containers, percona, database ]
+      tags: [ docker, containers, percona, mysql, database ]
 
     - name: create postgres container
       docker_container:
@@ -252,6 +258,7 @@
           - "443:443"
         links:
           - gitlab
+          - wordpress
         volumes:
           - "/var/certbot/:/etc/letsencrypt"
           - "/var/frontend/config/nginx.conf:/etc/nginx/nginx.conf:ro"
@@ -261,4 +268,17 @@
           - "/var/frontend/html/:/usr/share/nginx/html/"
           - "/var/certbot-well-known/.well-known/:/usr/share/nginx/html/.well-known:ro"
       tags: [ docker, containers, frontend ]
+
+    - name: create wordpress container
+      docker_container:
+        name: "wordpress"
+        image: "wordpress:latest"
+        links:
+          - percona
+        env:
+          WORDPRESS_DB_HOST: 'percona'
+          WORDPRESS_DB_USER: 'wordpress'
+          WORDPRESS_DB_PASSWORD: "{{ percona_passwords['wordpress'] }}"
+          WORDPRESS_DB_NAME: 'wordpress'
+      tags: [ docker, containers, wordpress ]
 

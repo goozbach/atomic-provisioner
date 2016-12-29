@@ -4,6 +4,7 @@ docker_volumes:
     mode: 1777
   - path: /var/htaccess
   - path: /var/certbot
+    mode: 0770
   - path: /var/certbot-well-known
   - path: /var/certbot-well-known/.well-known
   - path: /var/lib/local-registry
