@@ -1,0 +1,10 @@
+    - name: create percona container
+      docker_container:
+        name: "percona"
+        image: "percona:latest"
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ percona_passwords['root'] }}"
+        volumes:
+          - "/var/percona/bootstrap:/docker-entrypoint-initdb.d"
+          - "/var/percona/data:/var/lib/mysql"
+      tags: [ docker, containers, percona, mysql, database ]

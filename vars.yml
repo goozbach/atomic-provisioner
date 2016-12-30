@@ -1,7 +1,5 @@
 ---
 docker_volumes:
-  - path: /var/archives
-    mode: 1777
   - path: /var/htaccess
   - path: /var/certbot
     mode: 0770
@@ -15,8 +13,12 @@ docker_volumes:
   - path: /var/gitlab/config
   - path: /var/gitlab/logs
   - path: /var/gitlab/data
-  - path: /var/postgres/bootstrap
   - path: /var/postgres/data
-  - path: /var/percona/bootstrap
   - path: /var/percona/data
+  - path: /var/backup/certbot
+  - path: /var/backup/gitlab
+  - path: /var/backup/percona
+  - path: /var/backup/postgres
+  - path: /var/backup/wordpress
+  - path: /var/wordpress
 

@@ -1,0 +1,26 @@
+    - name: create gitlab container
+      docker_container:
+        name: "gitlab"
+        image: "gitlab/gitlab-ce:latest"
+        ports:
+          - "2222:22"
+        links:
+          - postgres
+        volumes:
+          - "/var/certbot/:/etc/letsencrypt"
+          - "/var/gitlab/config/:/var/gitlab/config/"
+          - "/var/gitlab/logs/:/var/gitlab/logs/"
+          - "/var/gitlab/config/:/var/gitlab/config/"
+        env:
+          GITLAB_OMNIBUS_CONFIG: |
+            nginx['ssl_certificate'] = '/etc/letsencrypt/live/rishi.goozbach.net/fullchain.pem'
+            nginx['ssl_certificate_key'] = '/etc/letsencrypt/live/rishi.goozbach.net/privkey.pem'
+            postgresql['enable'] = false
+            gitlab_rails['db_adapter'] = 'postgresql'
+            gitlab_rails['db_encoding'] = 'utf8'
+            gitlab_rails['db_database'] = "gitlab"
+            gitlab_rails['db_host'] = 'postgres'
+            gitlab_rails['db_port'] = '5432'
+            gitlab_rails['db_username'] = 'gitlab'
+            gitlab_rails['db_password'] = "{{ postgres_passwords['gitlab'] }}"
+            gitlab_rails['initial_root_password'] = "{{ gitlab_rootpass }}"

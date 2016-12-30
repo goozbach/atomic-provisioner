@@ -1,0 +1,10 @@
+    - name: create postgres container
+      docker_container:
+        name: "postgres"
+        image: "postgres:alpine"
+        env:
+          POSTGRES_PASSWORD: "{{ postgres_passwords['postgres'] }}"
+        volumes:
+          - "/var/postgres/bootstrap:/docker-entrypoint-initdb.d"
+          - "/var/postgres/data:/var/lib/postgresql/data"
+      tags: [ docker, containers, postgres ]

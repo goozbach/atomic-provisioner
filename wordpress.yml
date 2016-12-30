@@ -1,0 +1,12 @@
+    - name: create wordpress container
+      docker_container:
+        name: "wordpress"
+        image: "wordpress:latest"
+        links:
+          - percona
+        env:
+          WORDPRESS_DB_HOST: 'percona'
+          WORDPRESS_DB_USER: 'wordpress'
+          WORDPRESS_DB_PASSWORD: "{{ percona_passwords['wordpress'] }}"
+          WORDPRESS_DB_NAME: 'wordpress'
+      tags: [ docker, containers, wordpress ]

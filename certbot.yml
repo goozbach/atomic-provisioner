@@ -1,0 +1,8 @@
+    - name: create certbot-updater container
+      docker_container:
+        name: "certbot-updater"
+        image: "rishi.goozbach.net:5000/certbot-updater:v1.0.2"
+        volumes:
+          - "/var/certbot/:/etc/letsencrypt"
+          - "/var/certbot-well-known:/var/www/html/"
+      tags: [ docker, containers, certbot ]
