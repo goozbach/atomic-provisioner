@@ -71,7 +71,7 @@
       tags: [ docker ]
 
     - name: make rshared
-      shell: /usr/bin/mount --make-rshared warn=false 
+      shell: /usr/bin/mount --make-rshared / warn=false 
       changed_when: false
       tags: [ docker ]
 
