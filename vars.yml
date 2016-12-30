@@ -21,4 +21,3 @@ docker_volumes:
   - path: /var/backup/postgres
   - path: /var/backup/wordpress
   - path: /var/wordpress
-
