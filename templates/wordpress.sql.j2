@@ -1,0 +1,6 @@
+-- {{ ansible_managed }}
+
+-- create user
+-- CREATE USER wordpress IDENTIFIED BY '{{ percona_passwords['wordpress'] }}';
+CREATE DATABASE wordpress;
+GRANT ALL PRIVILEGES ON wordpress.* TO wordpress IDENTIFIED BY '{{ percona_passwords['wordpress'] }}';
