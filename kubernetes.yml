@@ -1,0 +1,20 @@
+---
+- name: setup Atomic host
+  hosts: atomichosts
+
+  vars_files:
+    - vault.yml
+    - vars.yml
+
+  tasks:
+    - name: create rsa file directory
+      file:
+        path: /etc/pki/tls/kubernetes/
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: create rsa file 
+      command: /bin/openssl genrsa -out /etc/pki/tls/kubernetes/servicekey.key 2048 creates=/etc/pki/tls/kubernetes/servicekey.key 
+      

@@ -31,8 +31,7 @@
       when: "'No upgrade available' not in upgradestatus.stdout"
 
     - name: install packages
-      shell: /usr/bin/rpm-ostree pkg-add tree git vim-enhanced docker-compose creates=/usr/bin/git
-      register: installpkgs
+      shell: /usr/bin/rpm-ostree pkg-add tree git vim-enhanced mysql postgresql pyOpenSSL creates=/usr/bin/git
 
     - name: restart machine again
       shell: sleep 2 && shutdown -r now "Ansible updates triggered"
