@@ -1,5 +1,5 @@
 ---
-include: 01-install.yml
-include: 02-customize.yml
-include: 03-firewall.yml
-include: 04-containers.yml
+- include: 01-install.yml
+- include: 02-customize.yml
+- include: 03-firewall.yml
+- include: 04-containers.yml
