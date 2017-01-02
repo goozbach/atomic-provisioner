@@ -18,3 +18,9 @@
     - name: create rsa file 
       command: /bin/openssl genrsa -out /etc/pki/tls/kubernetes/servicekey.key 2048 creates=/etc/pki/tls/kubernetes/servicekey.key 
       
+    - name: template config files
+      template
+
+    # 
+    # etcd kube-apiserver kube-controller-manager kube-scheduler
+    #
