@@ -1,0 +1,38 @@
+---
+- name: atomic host firewall
+  hosts: atomichosts
+
+  vars_files:
+    - vault.yml
+    - vars.yml
+
+  tasks:
+    - name: open related, established traffic
+      iptables:
+        chain: INPUT
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+      tags: [ firewall ]
+
+    - name: open new, ssh traffic
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: ssh
+        ctstate: NEW
+        jump: ACCEPT
+      tags: [ firewall ]
+
+    - name: open lo interface
+      iptables:
+        chain: INPUT
+        in_interface: lo
+        jump: ACCEPT
+      tags: [ firewall ]
+
+    - name: input drop
+      iptables:
+        chain: INPUT
+        policy: DROP
+      tags: [ firewall ]
+

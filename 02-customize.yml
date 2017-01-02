@@ -1,0 +1,31 @@
+---
+- name: customize environment
+  hosts: atomichosts
+
+  vars_files:
+    - vault.yml
+    - vars.yml
+
+  tasks:
+    - name: template out tmux.conf
+      template:
+        src: templates/tmux.conf.j2
+        dest: "~{{ item }}/.tmux.conf"
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: 0644
+      with_items:
+        - root
+        - goozbach
+
+    - name: template out git config
+      template:
+        src: templates/gitconfig.j2
+        dest: "~{{item}}/.gitconfig"
+        owner: "{{item}}"
+        group: "{{item}}"
+        mode: 0644
+      with_items:
+        - root
+        - goozbach
+

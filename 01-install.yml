@@ -1,0 +1,52 @@
+---
+- name: install packages and restart machine
+  hosts: atomichosts
+
+  vars_files:
+    - vault.yml
+    - vars.yml
+
+  tasks:
+    - name: upgrade
+      shell: /usr/bin/atomic host upgrade
+      register: upgradestatus
+      changed_when: "'No upgrade available' not in upgradestatus.stdout"
+
+    - name: restart machine
+      shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: "'No upgrade available' not in upgradestatus.stdout"
+
+    - name: waiting for server to come back
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        state: started
+        delay: 30
+        timeout: 300
+        port: 22
+      delegate_to: localhost
+      become: false
+      when: "'No upgrade available' not in upgradestatus.stdout"
+
+    - name: install packages
+      shell: /usr/bin/rpm-ostree pkg-add tree git vim-enhanced mysql postgresql pyOpenSSL creates=/usr/bin/git
+
+    - name: restart machine again
+      shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: "installpkgs.changed"
+
+    - name: waiting for server to come back again
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        state: started
+        delay: 30
+        timeout: 300
+        port: 22
+      delegate_to: localhost
+      become: false
+      when: "installpkgs.changed"
