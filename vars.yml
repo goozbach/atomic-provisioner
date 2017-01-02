@@ -21,3 +21,13 @@ docker_volumes:
   - path: /var/backup/postgres
   - path: /var/backup/wordpress
   - path: /var/wordpress
+
+servicekey_path: /etc/pki/tls/kubernetes/servicekey.key
+
+kubernetes_services:
+  - etcd
+  - kube-apiserver
+  - kube-controller-manager
+  - kube-scheduler
+  - kubelet
+  - kube-proxy
