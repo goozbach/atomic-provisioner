@@ -1,0 +1,38 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: percona
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: percona
+    spec:
+      containers:
+
+      - image: percona:latest
+        name: percona
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: percona-passwords.goozbach.net
+              key: root
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: percona-data
+        - mountPath: /backup
+          name: percona-backup
+
+      volumes:
+      - name: percona-data
+        hostPath:
+          path: /var/percona
+
+      - name: percona-backup
+        hostPath:
+          path: /var/backup/percona

@@ -2,4 +2,7 @@
 - include: 01-install.yml
 - include: 02-customize.yml
 - include: 03-firewall.yml
-- include: 04-containers.yml
+- include: 04-kubernetes.yml
+- include: 05-secrets.yml
+- include: 06-containers.yml
+
