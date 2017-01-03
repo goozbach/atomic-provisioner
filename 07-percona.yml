@@ -18,6 +18,8 @@
     - set_fact:
         percona_ip: "{{ percona_endpoint.subsets[0].addresses[0].ip }}"
 
+    # TODO may have to run ldconfig as ostree doesn't?
+
     - name: create percona databases
       mysql_db:
         name: "{{ item }}"
