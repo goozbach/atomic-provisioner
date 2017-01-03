@@ -34,3 +34,7 @@ kubernetes_services:
 
 percona_databases:
   - wordpress
+
+percona_users:
+  - name: wordpress
+    priv: 'wordpress.*:ALL'

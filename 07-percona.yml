@@ -28,3 +28,14 @@
         login_user: root
         login_password: "{{ secrets.percona_passwords['root'] }}"
       with_items: "{{ percona_databases }}"
+
+    - name: create percona users
+      mysql_user:
+        name: "{{ item.name }}"
+        password: "{{ secrets.percona_passwords[item.name] }}"
+        priv: "{{ item.priv }}"
+        state: present
+        login_host: "{{ percona_ip }}"
+        login_user: root
+        login_password: "{{ secrets.percona_passwords['root'] }}"
+      with_items: "{{ percona_users }}"
