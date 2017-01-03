@@ -7,6 +7,7 @@
     - vars.yml
 
   tasks:
+
     - name: create all docker volume folders
       file:
         path: "{{ item.path }}"
@@ -18,3 +19,25 @@
       with_items: "{{ docker_volumes }}"
       tags: [ mysql, containers, docker, volumes, registry, certbot, frontend, gitlab, postgres, folders, database, perconda ]
 
+    - name: create folders for deployments
+      file:
+        path: /var/kubernetes/deployments
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: template percona deployment
+      template:
+        src: templates/deployments/percona.j2
+        dest: /var/kubernetes/deployments/percona.yml
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: create percona deployment
+      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/percona.yml
+      register: createdeployments
+      failed_when: false
+      tags: [latest]
+      changed_when: false
