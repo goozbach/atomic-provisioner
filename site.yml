@@ -5,4 +5,5 @@
 - include: 04-kubernetes.yml
 - include: 05-secrets.yml
 - include: 06-containers.yml
+- include: 07-percona.yml
 

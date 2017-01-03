@@ -31,3 +31,6 @@ kubernetes_services:
   - kube-scheduler
   - kubelet
   - kube-proxy
+
+percona_databases:
+  - wordpress

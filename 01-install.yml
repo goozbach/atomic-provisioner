@@ -31,7 +31,7 @@
     #      when: "'No upgrade available' not in upgradestatus.stdout"
 
     - name: install packages
-      shell: /usr/bin/rpm-ostree pkg-add tree git vim-enhanced mysql postgresql pyOpenSSL creates=/usr/bin/git
+      shell: /usr/bin/rpm-ostree pkg-add MySQL-python jq tree git vim-enhanced mysql postgresql pyOpenSSL creates=/usr/bin/git
       register: installpkgs
 
     - name: restart machine again
