@@ -1,5 +1,5 @@
 ---
-- name: install packages and restart machine
+- name: install postgres container
   hosts: atomichosts
 
   vars_files:
@@ -7,21 +7,6 @@
     - vars.yml
 
   tasks:
-    - name: template percona deployment
-      template:
-        src: templates/deployments/percona.j2
-        dest: /var/kubernetes/deployments/percona.yml
-        owner: root
-        group: root
-        mode: 0644
-
-    - name: create percona deployment
-      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/percona.yml
-      register: createdeployments
-      failed_when: false
-      tags: [latest]
-      changed_when: false
-
     - name: get percona address
       command: /usr/bin/kubectl get ep percona --output=json
       changed_when: false

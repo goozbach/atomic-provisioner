@@ -27,17 +27,4 @@
         group: root
         mode: 0755
 
-    - name: template percona deployment
-      template:
-        src: templates/deployments/percona.j2
-        dest: /var/kubernetes/deployments/percona.yml
-        owner: root
-        group: root
-        mode: 0644
 
-    - name: create percona deployment
-      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/percona.yml
-      register: createdeployments
-      failed_when: false
-      tags: [latest]
-      changed_when: false
