@@ -44,4 +44,5 @@ percona_users:
 
 postgres_users:
   - name: gitlab
-    priv: 'ALL/gitlab:ALL'
+    database: gitlab
+    privs: ALL

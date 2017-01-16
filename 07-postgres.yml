@@ -54,10 +54,6 @@
       with_items: "{{ postgres_databases }}"
       tags: [ grants ]
 
-    - debug:
-        var: postgres_ip
-      tags: [ grants ]
-
     - name: create postgres users
       postgresql_user:
         db: "{{ item.name }}"
@@ -67,5 +63,18 @@
         login_host: "{{ postgres_ip }}"
         login_user: postgres
         login_password: "{{ secrets.postgres_passwords['postgres'] }}"
+      with_items: "{{ postgres_users }}"
+      tags: [ grants ]
+
+    - name: grant privs
+      postgresql_privs:
+        db: postgres
+        login_host: "{{ postgres_ip }}"
+        login_user: postgres
+        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
+        privs: "{{ item.privs }}"
+        type: database
+        obj: "{{ item.database }}"
+        role: "{{ item.name }}"
       with_items: "{{ postgres_users }}"
       tags: [ grants ]
