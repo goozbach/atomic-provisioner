@@ -45,19 +45,19 @@
       postgresql_db:
         name: "{{ item }}"
         login_host: "{{ postgres_ip }}"
-        login_user: root
+        login_user: postgres
         login_password: "{{ secrets.postgres_passwords['postgres'] }}"
         state: present
       with_items: "{{ postgres_databases }}"
 
     - name: create postgres users
       postgresql_user:
-        db: acme
+        db: "{{ item.name }}"
         name: "{{ item.name }}"
         password: "{{ secrets.postgres_passwords[item.name] }}"
         priv: "{{ item.priv }}"
         state: present
         login_host: "{{ postgres_ip }}"
-        login_user: root
-        login_password: "{{ secrets.postgres_passwords['root'] }}"
+        login_user: postgres
+        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
       with_items: "{{ postgres_users }}"
