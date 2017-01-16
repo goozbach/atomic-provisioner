@@ -35,6 +35,13 @@ kubernetes_services:
 percona_databases:
   - wordpress
 
+postgres_databases:
+  - gitlab
+
 percona_users:
   - name: wordpress
     priv: 'wordpress.*:ALL'
+
+postgres_users:
+  - name: gitlab
+    priv: 'gitlab.*:ALL'

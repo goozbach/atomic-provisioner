@@ -7,35 +7,57 @@
     - vars.yml
 
   tasks:
-    - name: get percona address
-      command: /usr/bin/kubectl get ep percona --output=json
+    - name: template postgres deployment
+      template:
+        src: templates/deployments/postgres.j2
+        dest: /var/kubernetes/deployments/postgres.yml
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: expose postgres deployment
+      command: /usr/bin/kubectl expose deployment postgres
+      failed_when: false
+      tags: [latest]
       changed_when: false
-      register: percona_raw
+
+    - name: create postgres deployment
+      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/postgres.yml
+      register: createdeployments
+      failed_when: false
+      tags: [latest]
+      changed_when: false
+
+    - name: get postgres address
+      command: /usr/bin/kubectl get ep postgres --output=json
+      changed_when: false
+      register: postgres_raw
 
     - set_fact:
-        percona_endpoint: "{{ percona_raw.stdout | from_json }}"
+        postgres_endpoint: "{{ postgres_raw.stdout | from_json }}"
 
     - set_fact:
-        percona_ip: "{{ percona_endpoint.subsets[0].addresses[0].ip }}"
+        postgres_ip: "{{ postgres_endpoint.subsets[0].addresses[0].ip }}"
 
     # TODO may have to run ldconfig as ostree doesn't?
 
-    - name: create percona databases
-      mysql_db:
+    - name: create postgres databases
+      postgresql_db:
         name: "{{ item }}"
-        state: present
-        login_host: "{{ percona_ip }}"
+        login_host: "{{ postgres_ip }}"
         login_user: root
-        login_password: "{{ secrets.percona_passwords['root'] }}"
-      with_items: "{{ percona_databases }}"
+        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
+        state: present
+      with_items: "{{ postgres_databases }}"
 
-    - name: create percona users
-      mysql_user:
+    - name: create postgres users
+      postgresql_user:
+        db: acme
         name: "{{ item.name }}"
-        password: "{{ secrets.percona_passwords[item.name] }}"
+        password: "{{ secrets.postgres_passwords[item.name] }}"
         priv: "{{ item.priv }}"
         state: present
-        login_host: "{{ percona_ip }}"
+        login_host: "{{ postgres_ip }}"
         login_user: root
-        login_password: "{{ secrets.percona_passwords['root'] }}"
-      with_items: "{{ percona_users }}"
+        login_password: "{{ secrets.postgres_passwords['root'] }}"
+      with_items: "{{ postgres_users }}"

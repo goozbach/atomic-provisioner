@@ -1,0 +1,38 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+
+      - image: postgres:latest
+        name: postgres
+        ports:
+        - containerPort: 3306
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-passwords.goozbach.net
+              key: postgres
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/
+          name: postgres-data
+        - mountPath: /backup
+          name: postgres-backup
+
+      volumes:
+      - name: postgres-data
+        hostPath:
+          path: /var/postgres
+
+      - name: postgres-backup
+        hostPath:
+          path: /var/backup/postgres
