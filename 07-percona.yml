@@ -1,5 +1,5 @@
 ---
-- name: install packages and restart machine
+- name: run percona container
   hosts: atomichosts
 
   vars_files:
@@ -18,6 +18,12 @@
     - name: create percona deployment
       command: /usr/bin/kubectl create -f /var/kubernetes/deployments/percona.yml
       register: createdeployments
+      failed_when: false
+      tags: [latest]
+      changed_when: false
+
+    - name: expose percona deployment
+      command: /usr/bin/kubectl expose deployment percona
       failed_when: false
       tags: [latest]
       changed_when: false
