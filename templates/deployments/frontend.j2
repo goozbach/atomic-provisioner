@@ -1,0 +1,40 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+
+      - image: registry.gcp.gooz.us/goozbach/frontend:v0.0.1
+        name: frontend
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: frontend-data
+        - mountPath: /etc/nginx
+          name: frontend-config
+        - mountPath: /backup
+          name: frontend-backup
+
+      volumes:
+      - name: frontend-data
+        hostPath:
+          path: /var/frontend/html/
+
+      - name: frontend-config
+        hostPath:
+          path: /var/frontend/config/
+
+      - name: frontend-backup
+        hostPath:
+          path: /var/backup/frontend
