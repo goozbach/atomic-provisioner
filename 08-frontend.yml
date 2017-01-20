@@ -16,6 +16,15 @@
         mode: 0644
       tags: [ frontend ]
 
+    - name: template frontend endpoint
+      template:
+        src: templates/deployments/frontend-ep.j2
+        dest: /var/kubernetes/deployments/frontend-eb.yml
+        owner: root
+        group: root
+        mode: 0644
+      tags: [ frontend ]
+
     - name: checkout frontend config
       git:
         repo: https://github.com/goozbach/frontend-config.git
@@ -29,29 +38,15 @@
       changed_when: false
       tags: [ frontend ]
 
-    - name: expose frontend deployment
-      command: /usr/bin/kubectl expose deployment frontend
+    - name: create frontend endpoint
+      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/frontend-ep.yml
+      register: createdeployments
       failed_when: false
-      tags: [ frontend ]
       changed_when: false
+      tags: [ frontend ]
 
     - name: pause for effect
       pause:
         seconds: 20
       tags: [ frontend ]
 
-    - name: get frontend address
-      command: /usr/bin/kubectl get ep frontend --output=json
-      changed_when: false
-      register: frontend_raw
-      tags: [ frontend ]
-
-    - set_fact:
-        frontend_endpoint: "{{ frontend_raw.stdout | from_json }}"
-      tags: [ frontend ]
-
-    - set_fact:
-        frontend_ip: "{{ frontend_endpoint.subsets[0].addresses[0].ip }}"
-      tags: [ frontend ]
-
-    # TODO may have to run ldconfig as ostree doesn't?
