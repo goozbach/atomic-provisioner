@@ -18,8 +18,8 @@
 
     - name: template frontend endpoint
       template:
-        src: templates/deployments/frontend-ep.j2
-        dest: /var/kubernetes/deployments/frontend-eb.yml
+        src: templates/deployments/frontend-lb.j2
+        dest: /var/kubernetes/deployments/frontend-lb.yml
         owner: root
         group: root
         mode: 0644
@@ -39,8 +39,8 @@
       tags: [ frontend ]
 
     - name: create frontend endpoint
-      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/frontend-ep.yml
-      register: createdeployments
+      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/frontend-lb.yml
+      register: createendpoint
       failed_when: false
       changed_when: false
       tags: [ frontend ]
