@@ -32,10 +32,10 @@ kubernetes_services:
   - kubelet
   - kube-proxy
 
-percona_databases:
+wordpress_databases:
   - wordpress
 
-postgres_databases:
+gitlab_databases:
   - gitlab
 
 wordpress_users:

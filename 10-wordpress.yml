@@ -7,6 +7,12 @@
     - vars.yml
 
   tasks:
+    - name: expose percona deployment
+      command: /usr/bin/kubectl expose deployment percona
+      failed_when: false
+      tags: [latest]
+      changed_when: false
+
     - name: get percona address
       command: /usr/bin/kubectl get ep percona --output=json
       changed_when: false
@@ -56,6 +62,15 @@
 
     - set_fact:
         wordpress_port: "{{ wordpress_endpoint.subsets[0].ports[0].port }}"
+
+    - name: create percona databases
+      mysql_db:
+        name: "{{ item }}"
+        state: present
+        login_host: "{{ percona_ip }}"
+        login_user: root
+        login_password: "{{ secrets.percona_passwords['root'] }}"
+      with_items: "{{ wordpress_databases }}"
 
     - name: create percona wordpress user
       mysql_user:
