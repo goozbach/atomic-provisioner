@@ -1,0 +1,25 @@
+---
+- name: run certbot container
+  hosts: atomichosts
+
+  vars_files:
+    - vault.yml
+    - vars.yml
+
+  tasks:
+    - name: template certbot deployment
+      template:
+        src: templates/deployments/certbot.j2
+        dest: /var/kubernetes/deployments/certbot.yml
+        owner: root
+        group: root
+        mode: 0644
+      tags: [ certbot ]
+
+    - name: create certbot deployment
+      command: /usr/bin/kubectl create -f /var/kubernetes/deployments/certbot.yml
+      register: createdeployments
+      failed_when: false
+      changed_when: false
+      tags: [ certbot ]
+
