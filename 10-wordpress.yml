@@ -37,3 +37,35 @@
       changed_when: false
       tags: [ wordpress ]
 
+    - name: expose wordpress deployment
+      command: /usr/bin/kubectl wordpress deployment percona
+      failed_when: false
+      tags: [latest]
+      changed_when: false
+
+    - name: get wordpress address
+      command: /usr/bin/kubectl get ep wordpress --output=json
+      changed_when: false
+      register: wordpress_raw
+
+    - set_fact:
+        wordpress_endpoint: "{{ wordpress_raw.stdout | from_json }}"
+
+    - set_fact:
+        wordpress_ip: "{{ wordpress_endpoint.subsets[0].notReadyAddresses[0].ip }}"
+
+    - set_fact:
+        wordpress_port: "{{ wordpress_endpoint.subsets[0].ports[0].port }}"
+
+    - name: create percona wordpress user
+      mysql_user:
+        name: "{{ item.name }}"
+        host: "{{ wordpress_ip }}"
+        password: "{{ secrets.percona_passwords[item.name] }}"
+        priv: "{{ item.priv }}"
+        state: present
+        login_host: "{{ percona_ip }}"
+        login_user: root
+        login_password: "{{ secrets.percona_passwords['root'] }}"
+      with_items: "{{ wordpress_users }}"
+

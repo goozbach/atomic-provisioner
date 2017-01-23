@@ -38,7 +38,7 @@ percona_databases:
 postgres_databases:
   - gitlab
 
-percona_users:
+wordpress_users:
   - name: wordpress
     priv: 'wordpress.*:ALL'
 
