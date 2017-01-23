@@ -1,0 +1,38 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+
+      - image: wordpress:latest
+        name: wordpress
+        ports:
+        - containerPort: 8080
+        env:
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: percona-passwords.goozbach.net
+              key: wordpress
+        - name: WORDPRESS_DB_HOST
+          value: {{ percona_ip }}:{{ percona_port }}
+        - name: WORDPRESS_DB_USER
+          value: wordpress
+        - name: WORDPRESS_DB_NAME
+          value: wordpress
+        volumeMounts:
+        - mountPath: /backup
+          name: wordpress-backup
+
+      volumes:
+      - name: wordpress-backup
+        hostPath:
+          path: /var/backup/wordpress
