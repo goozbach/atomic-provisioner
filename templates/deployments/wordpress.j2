@@ -15,7 +15,7 @@ spec:
       - image: wordpress:latest
         name: wordpress
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         env:
         - name: WORDPRESS_DB_PASSWORD
           valueFrom:
@@ -31,8 +31,12 @@ spec:
         volumeMounts:
         - mountPath: /backup
           name: wordpress-backup
-
+        - mountPath: /var/www/html
+          name: wordpress
       volumes:
+      - name: wordpress
+        hostPath:
+          path: /var/wordpress
       - name: wordpress-backup
         hostPath:
           path: /var/backup/wordpress
