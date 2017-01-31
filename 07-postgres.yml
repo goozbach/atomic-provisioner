@@ -42,39 +42,3 @@
         postgres_ip: "{{ postgres_endpoint.subsets[0].addresses[0].ip }}"
       tags: [ grants ]
 
-    # TODO may have to run ldconfig as ostree doesn't?
-
-    - name: create postgres databases
-      postgresql_db:
-        name: "{{ item }}"
-        login_host: "{{ postgres_ip }}"
-        login_user: postgres
-        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
-        state: present
-      with_items: "{{ postgres_databases }}"
-      tags: [ grants ]
-
-    - name: create postgres users
-      postgresql_user:
-        db: "{{ item.name }}"
-        name: "{{ item.name }}"
-        password: "{{ secrets.postgres_passwords[item.name] }}"
-        state: present
-        login_host: "{{ postgres_ip }}"
-        login_user: postgres
-        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
-      with_items: "{{ postgres_users }}"
-      tags: [ grants ]
-
-    - name: grant privs
-      postgresql_privs:
-        db: postgres
-        login_host: "{{ postgres_ip }}"
-        login_user: postgres
-        login_password: "{{ secrets.postgres_passwords['postgres'] }}"
-        privs: "{{ item.privs }}"
-        type: database
-        obj: "{{ item.database }}"
-        role: "{{ item.name }}"
-      with_items: "{{ postgres_users }}"
-      tags: [ grants ]

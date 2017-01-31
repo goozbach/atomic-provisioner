@@ -27,7 +27,7 @@
 
     - name: checkout frontend config
       git:
-        repo: https://github.com/goozbach/frontend-config.git
+        repo: git@github.com:goozbach/frontend-config.git
         dest: /var/frontend/config
       tags: [ frontend ]
 
