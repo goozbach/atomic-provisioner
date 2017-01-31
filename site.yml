@@ -6,4 +6,7 @@
 - include: 05-secrets.yml
 - include: 06-containers.yml
 - include: 07-percona.yml
+- include: 07-postgres.yml
+- include: 08-frontend.yml
+- include: 09-wordpress.yml
 
