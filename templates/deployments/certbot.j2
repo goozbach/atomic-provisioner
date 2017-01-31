@@ -26,6 +26,9 @@ spec:
 
         - mountPath: /backup
           name: certbot-backup
+        env:
+        - name: CERTBOT_DOMAINS
+          value: rishi.goozbach.net,blog.goozbach.net,gitlab.goozbach.net,blockgwoodwork.com
 
       volumes:
       - name: letsencrypt
