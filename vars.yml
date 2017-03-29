@@ -22,7 +22,7 @@ docker_volumes:
   - path: /var/backup/wordpress
   - path: /var/wordpress
 
-servicekey_path: ''
+servicekey_path: /etc/pki/tls/kubernetes/servicekey.key
 
 kubernetes_services:
   - etcd

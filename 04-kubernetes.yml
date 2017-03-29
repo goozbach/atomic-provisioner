@@ -16,8 +16,10 @@
         mode: 0755
 
     - name: create rsa file 
-      command: /bin/openssl genrsa -out {{ servicekey_path }} 2048 creates={{ servicekey_path }} 
-      when: "{{ servicekey_path }}"
+      command: /bin/openssl genrsa -out {{ servicekey_path }} 2048
+      args:
+        creates: "{{ servicekey_path }}"
+      when: "servicekey_path != ''"
       
     - name: template config files
       template:
