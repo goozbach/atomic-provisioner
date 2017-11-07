@@ -16,8 +16,8 @@
     - name: change perms on servicekey
       file:
         path: "{{ servicekey_path }}"
-        owner: root
-        group: root
+        owner: kube
+        group: kube
         mode: 0644
 
     - name: template config files
