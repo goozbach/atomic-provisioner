@@ -7,20 +7,19 @@
     - vars.yml
 
   tasks:
-    - name: create rsa file directory
-      file:
-        path: /etc/pki/tls/kubernetes/
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-
     - name: create rsa file 
       command: /bin/openssl genrsa -out {{ servicekey_path }} 2048
       args:
         creates: "{{ servicekey_path }}"
       when: "servicekey_path != ''"
       
+    - name: change perms on servicekey
+      file:
+        path: "{{ servicekey_path }}"
+        owner: root
+        group: root
+        mode: 0644
+
     - name: template config files
       template:
         src: templates/{{ item }}.j2
@@ -29,9 +28,10 @@
         - apiserver
         - controller-manager
 
-    - name: start and enable services
-      service:
-        name: "{{ item }}"
-        state: started
-        enabled: true
-      with_items: "{{ kubernetes_services }}"
+    - name: etcd container
+      atomic_container:
+        name: etcd
+        image: 'registry.fedoraproject.org/f26/etcd'
+        backend: ostree
+        system: true
+      tags: [ containers ]

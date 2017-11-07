@@ -23,6 +23,26 @@
         jump: ACCEPT
       tags: [ firewall ]
 
+    - name: open new, http traffic
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: http
+        ctstate: NEW
+        jump: ACCEPT
+        action: insert
+      tags: [ firewall ]
+
+    - name: open new, https traffic
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: https
+        ctstate: NEW
+        jump: ACCEPT
+        action: insert
+      tags: [ firewall ]
+
     - name: open lo interface
       iptables:
         chain: INPUT
