@@ -7,31 +7,31 @@
     - vars.yml
 
   tasks:
-    #    - name: upgrade
-    #      shell: /usr/bin/atomic host upgrade
-    #      register: upgradestatus
-    #      changed_when: "'No upgrade available' not in upgradestatus.stdout"
-    #
-    #    - name: restart machine
-    #      shell: sleep 2 && shutdown -r now "Ansible updates triggered"
-    #      async: 1
-    #      poll: 0
-    #      ignore_errors: true
-    #      when: "'No upgrade available' not in upgradestatus.stdout"
-    #
-    #    - name: waiting for server to come back
-    #      wait_for:
-    #        host: "{{ inventory_hostname }}"
-    #        state: started
-    #        delay: 30
-    #        timeout: 300
-    #        port: 22
-    #      delegate_to: localhost
-    #      become: false
-    #      when: "'No upgrade available' not in upgradestatus.stdout"
+    - name: upgrade
+      shell: /usr/bin/atomic host upgrade
+      register: upgradestatus
+      changed_when: "'No upgrade available' not in upgradestatus.stdout"
+    
+    - name: restart machine
+      shell: sleep 2 && shutdown -r now "Ansible updates triggered"
+      async: 1
+      poll: 0
+      ignore_errors: true
+      when: "'No upgrade available' not in upgradestatus.stdout"
+    
+    - name: waiting for server to come back
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        state: started
+        delay: 30
+        timeout: 300
+        port: 22
+      delegate_to: localhost
+      become: false
+      when: "'No upgrade available' not in upgradestatus.stdout"
 
     - name: install packages
-      shell: /usr/bin/rpm-ostree pkg-add python-psycopg2 PyYAML MySQL-python jq tree git vim-enhanced mysql postgresql pyOpenSSL creates=/usr/bin/git
+      shell: /usr/bin/rpm-ostree pkg-add tree git vim-enhanced creates=/usr/bin/git
       register: installpkgs
 
     - name: restart machine again
