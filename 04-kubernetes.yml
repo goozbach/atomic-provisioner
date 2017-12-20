@@ -27,6 +27,8 @@
       with_items:
         - apiserver
         - controller-manager
+      tags: [ configs ]
+
 
     - name: etcd container
       atomic_container:

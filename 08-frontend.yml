@@ -34,16 +34,14 @@
     - name: create frontend deployment
       command: /usr/bin/kubectl create -f /var/kubernetes/deployments/frontend.yml
       register: createdeployments
-      failed_when: false
       changed_when: false
       tags: [ frontend ]
 
     - name: create frontend endpoint
       command: /usr/bin/kubectl create -f /var/kubernetes/deployments/frontend-lb.yml
       register: createendpoint
-      failed_when: false
       changed_when: false
-      tags: [ frontend ]
+      tags: [ frontend, endpoint ]
 
     - name: pause for effect
       pause:
